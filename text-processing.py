@@ -5,27 +5,6 @@ Spring 2021
 """
 
 
-# #sample
-# wingsLyrics = "[Pre-Chorus]\nI'd put some money on forever, but I (Hey)\nDon't like to gamble on the weather, so I\nJust watch while\nThe sun is shinin', I can look at the horizonznThe walls keep gettin' wider, I just hope I never find 'em, I know\nHey, well\n\n[Chorus]\nThese are my wings, these are my wings, yeah\nThese are my wings, yeah, well"
-# motherLyrics = "[Verse 1: Roger Waters]\nMother, do you think they'll drop the bomb?\nMother, do you think they'll like this song?\nMother, do you think they'll try to break my balls?\nMother, should I build the wall?\n\n[Verse 2: Roger Waters]\nMother, should I run for president?\nMother, should I trust the government?\nMother, will they put me in the firing line?\nIs it just a waste of time?"
-# chLyrics = "[Verse 1: Childish Gambino]\nUh\nSomeone made a mess in my account (Someone sound like me, yes)\nSomeone bought a Patek in a panic (Yes, yes)\nBode, Bentley addict, I go manic (Oh no)\nHit the oochie-coochie 'til it's slanted, ooh\nI'm gon' beat it up, ooh, lady\nI'm gon' make your dreams come, baby\nAyy, you the one who talkin' all that trash (You the one who talkin' all that trash)\nForty-five, I'll twenty-eight that ass (Ooh)\nYou can set the snow on fire (Yeah, ooh)\nYou smell like a peach papaya\nShe said, 'Eat this psilocybin, I'ma be right back'\nI'm like, 'Aight' (Aight)\n'Ayy, I don't know what psilocybin is' (No)\n'This better not be no molly'\nShe just laughed and closed the door\nDark chocolate, sea salt"
-# ld = pd.DataFrame(
-#     {
-#         "file": ["A", "B", "C"],
-#         "artist": ["Mac Miller", "Pink Floyd", "Childish Gambino"],
-#         "title": ["Wings", "Mother", "12.38"],
-#         "lyrics": [wingsLyrics, motherLyrics, chLyrics],
-#         "genre": ["Hip Hop", "Rock", "Hip Hop"],
-#         "valence": [1,0,0],
-#         "danceability": [0,0,1],
-#         "year": [2018,1979,2020],
-#      }
-#     )
-
-# lyrics = ld["lyrics"].values
-# valence = ld['valence'].values
-# dance = ld["danceability"].values
-
 #%% Import actual data
 
 import pandas as pd
@@ -71,7 +50,7 @@ print('%s songs remain in the dataset.' %after)
 
 dataPath1 = "/Users/Ryan/Documents/GitHub/351-lyric-analysis/data/filtered_data.csv"
 
-ld.to_csv(os.path.join(dataPath1, index=True))
+# ld.to_csv(os.path.join(dataPath1), index=False)
 
 #%% Split into training, test
 import numpy as np
@@ -80,6 +59,7 @@ msk = np.random.rand(len(ld)) < 0.8
 
 train = ld[msk]
 test = ld[~msk]
+                 
 
 #%% Porter-Stemmer Tokenizer, suffix stripper
 
@@ -144,9 +124,10 @@ countVec = CountVectorizer(
             ngram_range=(1,1)
     )
 
-# valence = ld['valence'].values
-# dance = ld["danceability"].values
-
+valenceTrain = train["valence"]
+valenceTest = test["valence"]
+danceTrain = train["danceability"]
+danceTest = test["danceability"]
 countVecTrain = countVec.fit(train["lyrics"].values)
 countVecTest = countVec.fit(test["lyrics"].values)
 # print('Vocabulary size: %s' %len(countVecTrain.get_feature_names()))
@@ -164,8 +145,10 @@ with open('countVecTest', 'wb') as count_vector_file:
 
 #%% Load Vect (test)
 
-# with open('countVec', 'rb') as count_vector_file:
-#     countVector = pickle.load(count_vector_file)
+with open('countVecTrain', 'rb') as count_vector_file:
+    countVecTrain = pickle.load(count_vector_file)
+with open('countVecTest', 'rb') as count_vector_file:
+    countVecTest = pickle.load(count_vector_file)
 
 
 #%% Model
